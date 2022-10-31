@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "@/api/axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast, Flip } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
@@ -9,7 +9,6 @@ import useAuth from "@/hooks/useAuth";
 
 const Login: FC<any> = (): JSX.Element => {
   const { setAuth,auth } = useAuth();
-  
   const {
     register,
     handleSubmit,
@@ -29,7 +28,7 @@ const Login: FC<any> = (): JSX.Element => {
         withCredentials: true,
       })
       .then((response) => {
-        if (response.data.success) {
+        if (response.status===200) {
           toast.success(response.data.message, {
             position: "top-right",
             autoClose: 3000,

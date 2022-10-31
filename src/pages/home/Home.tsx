@@ -1,11 +1,13 @@
 import React, { FC } from "react";
 import "./home.css";
+import { useNavigate } from "react-router-dom";
 
 
 const Home: FC<any> = ({ history }) => {
+  const navigate = useNavigate();
   const logout = () => {
     localStorage.clear();
-    history.push("/login");
+    navigate("/login");
   };
   return (
     <>

@@ -1,12 +1,14 @@
 import React, { FC } from "react";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "@/api/axios";
 import { ToastContainer, toast, Flip } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.min.css";
 
-
 const Register: FC<any> = ({ history }) => {
+  const REGISTER_URL = "/register";
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -14,7 +16,7 @@ const Register: FC<any> = ({ history }) => {
     reset,
     formState: { errors },
   } = useForm();
-  const submitData = (data: any) => {
+  const submitData = async (data: any) => {
     let params = {
       firstname: data.firstname,
       lastname: data.lastname,
@@ -22,10 +24,12 @@ const Register: FC<any> = ({ history }) => {
       password: data.password,
       confirmpassword: data.cpassword,
     };
-    console.log(data);
-    axios
-      .post("http://localhost:4000/api/signup", params)
-      .then(function (response) {
+    await axios
+      .post(REGISTER_URL, params, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      })
+      .then((response)=>{
         toast.success(response.data.message, {
           position: "top-right",
           autoClose: 3000,
@@ -38,32 +42,23 @@ const Register: FC<any> = ({ history }) => {
         });
         reset();
         setTimeout(() => {
-          history.push("/login");
+          navigate("/login");
         }, 3000);
       })
 
-      .catch(function (error) {
+      .catch((error)=>{
         console.log(error);
       });
   };
   return (
     <>
       <div className="container">
-        <div
-          className="row d-flex justify-content-center align-items-center"
-          style={{ height: "100vh" }}
-        >
+        <div className="row d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
           <div className="card mb-3 mt-3 rounded" style={{ maxWidth: "500px" }}>
             <div className="col-md-12">
               <div className="card-body">
-                <h3 className="card-title text-center text-secondary mt-3 mb-3">
-                  Sign Up Form
-                </h3>
-                <form
-                  className="row"
-                  autoComplete="off"
-                  onSubmit={handleSubmit(submitData)}
-                >
+                <h3 className="card-title text-center text-secondary mt-3 mb-3">Sign Up Form</h3>
+                <form className="row" autoComplete="off" onSubmit={handleSubmit(submitData)}>
                   <div className="col-md-6">
                     <div className="">
                       <label className="form-label">Firstname</label>
@@ -140,9 +135,7 @@ const Register: FC<any> = ({ history }) => {
                       {...register("cpassword", {
                         required: "Confirm Password is required",
 
-                        validate: (value) =>
-                          value === watch("password") ||
-                          "Passwords don't match.",
+                        validate: (value) => value === watch("password") || "Passwords don't match.",
                       })}
                     />
                     {errors.cpassword && (
@@ -152,10 +145,7 @@ const Register: FC<any> = ({ history }) => {
                     )}
                   </div>
                   <div className="text-center mt-4 ">
-                    <button
-                      className="btn btn-outline-primary text-center shadow-none mb-3"
-                      type="submit"
-                    >
+                    <button className="btn btn-outline-primary text-center shadow-none mb-3" type="submit">
                       Submit
                     </button>
                     <p className="card-text">
