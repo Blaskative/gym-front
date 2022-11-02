@@ -8,7 +8,7 @@ type Props = { children: JSX.Element};
 export const AuthProvider: React.FC<Props>  = ({ children }) => {
     const [auth, setAuth] = useState(() =>
       localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user")|| '{}')
+      ? localStorage.getItem("user")
       : null);
 
     return (

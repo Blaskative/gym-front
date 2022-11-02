@@ -6,57 +6,33 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast, Flip } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import useAuth from "@/hooks/useAuth";
+import { toastError, toastSuccess } from "@/utilities/toast";
 
 const Login: FC<any> = (): JSX.Element => {
-  const { setAuth,auth } = useAuth();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { setAuth} = useAuth();
+  const {register,handleSubmit,formState: { errors }} = useForm();
   const navigate = useNavigate();
   const LOGIN_URL = "/login";
 
   const login = async (data: any) => {
-    let params = {
-      email: data.email,
-      password: data.password,
-    };
+    
     await axios
-      .post(LOGIN_URL, params, {
+      .post(LOGIN_URL, {email: data.email, password: data.password}, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       })
       .then((response) => {
         if (response.status===200) {
-          toast.success(response.data.message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: false,
-            progress: 0,
-            toastId: "my_toast",
-          });
+          toastSuccess(response.data.message)
           const token = response?.data?.token;
           const roles = response?.data?.roles;
           setAuth({roles, token });
-          localStorage.setItem("auth", response.data.token);
+          localStorage.setItem("user", response.data.token);
           setTimeout(() => {
             navigate("/");
           }, 3000);
         } else {
-          toast.error(response.data.error, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: false,
-            progress: 0,
-            toastId: "my_toast",
-          });
+          toastError(response.data.message);
         }
       })
 

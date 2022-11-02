@@ -1,24 +1,30 @@
-import { UserEmptyState } from '@/models/user';
 import { createSlice } from '@reduxjs/toolkit';
+import { UserInfo } from '@/models/user.model';
+import { Roles } from '@/models/roles';
+import { clearLocalStorage, persistLocalStorage } from '@/utilities';
+import { EmptyUserState } from '@/models/user.model';
+import { UserKey } from '@/models/user.model';
 
 export const userSlice = createSlice({
-  name: 'champion',
-  initialState: UserEmptyState,
+  name: 'user',
+  initialState: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : EmptyUserState,
   reducers: {
     createUser: (state, action) => {
+      persistLocalStorage<UserInfo>(UserKey, action.payload);
       return action.payload;
     },
-    modifyUser: (state, action) => {
-      const formattedData = { ...state, ...action.payload };
-      return formattedData;
+    updateUser: (state, action) => {
+      const result = { ...state, ...action.payload };
+      persistLocalStorage<UserInfo>(UserKey, result);
+      return result;
     },
     resetUser: () => {
-      return UserEmptyState;
+      clearLocalStorage(UserKey);
+      return EmptyUserState;
     }
   }
 });
 
-// Action creators are generated for each case reducer function
-export const { createUser, modifyUser, resetUser} = userSlice.actions;
+export const { createUser, updateUser, resetUser } = userSlice.actions;
 
 export default userSlice.reducer;
